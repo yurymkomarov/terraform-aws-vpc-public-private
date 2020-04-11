@@ -8,7 +8,7 @@ We recommend this module if you want to run a public-facing web application, whi
 
 The following diagram shows the key components of the configuration for this module:
 
-![The following diagram shows the key components of the configuration for this module](images/diagram.png)
+![The following diagram shows the key components of the configuration for this module](https://github.com/yurymkomarov/terraform-aws-vpc-public-private/raw/master/images/diagram.png)
 
 The configuration for this module includes the following:
 
