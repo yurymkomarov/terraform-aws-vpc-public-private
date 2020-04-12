@@ -33,7 +33,8 @@ resource "aws_vpc" "this" {
   enable_dns_support   = true
 
   tags = {
-    Name = "${var.vpc_name}-${random_id.this.hex}"
+    Name      = var.name
+    Workspace = terraform.workspace
   }
 
   lifecycle {
@@ -58,11 +59,12 @@ resource "aws_flow_log" "this" {
 resource "aws_cloudwatch_log_group" "this" {
   count = var.create_vpc && var.flow_log_enable && var.flow_log_destination == "cloudwatch" ? 1 : 0
 
-  name              = "${var.vpc_name}-vpc-flow-log-${random_id.this.hex}"
+  name              = "${var.name}-flow-log-${random_id.this.hex}"
   retention_in_days = 14
 
   tags = {
-    Name = "${var.vpc_name}-${random_id.this.hex}"
+    Name      = var.name
+    Workspace = terraform.workspace
   }
 
   lifecycle {
@@ -73,10 +75,11 @@ resource "aws_cloudwatch_log_group" "this" {
 resource "aws_s3_bucket" "this" {
   count = var.create_vpc && var.flow_log_enable && var.flow_log_destination == "s3" ? 1 : 0
 
-  bucket = "${var.vpc_name}-vpc-flow-log-${random_id.this.hex}"
+  bucket = "${var.name}-flow-log-${random_id.this.hex}"
 
   tags = {
-    Name = "${var.vpc_name}-${random_id.this.hex}"
+    Name      = var.name
+    Workspace = terraform.workspace
   }
 
   lifecycle {
@@ -87,14 +90,15 @@ resource "aws_s3_bucket" "this" {
 resource "aws_iam_role" "this" {
   count = var.create_vpc && var.flow_log_enable && var.flow_log_destination == "cloudwatch" ? 1 : 0
 
-  name = "${var.vpc_name}-vpc-flow-log-${random_id.this.hex}"
+  name = "${var.name}-flow-log-${random_id.this.hex}"
 
   assume_role_policy    = data.aws_iam_policy_document.role.json
   force_detach_policies = true
   path                  = "/"
 
   tags = {
-    Name = "${var.vpc_name}-${random_id.this.hex}"
+    Name      = var.name
+    Workspace = terraform.workspace
   }
 
   lifecycle {
@@ -105,7 +109,7 @@ resource "aws_iam_role" "this" {
 resource "aws_iam_role_policy" "this" {
   count = var.create_vpc && var.flow_log_enable && var.flow_log_destination == "cloudwatch" ? 1 : 0
 
-  name = "${var.vpc_name}-vpc-flow-log-${random_id.this.hex}"
+  name = "${var.name}-flow-log-${random_id.this.hex}"
 
   role   = aws_iam_role.this[0].id
   policy = data.aws_iam_policy_document.role_policy_cloudwatch.json
@@ -121,7 +125,8 @@ resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this[0].id
 
   tags = {
-    Name = "${var.vpc_name}-${random_id.this.hex}"
+    Name      = var.name
+    Workspace = terraform.workspace
   }
 
   lifecycle {
@@ -135,8 +140,9 @@ resource "aws_eip" "nat" {
   vpc = true
 
   tags = {
-    Name    = "${var.vpc_name}-${random_id.this.hex}"
-    Network = "NAT"
+    Name      = var.name
+    Workspace = terraform.workspace
+    Network   = "NAT"
   }
 
   lifecycle {
@@ -151,7 +157,8 @@ resource "aws_nat_gateway" "nat" {
   subnet_id     = local.nat_gateways_count == 1 ? aws_subnet.public[0].id : aws_subnet.public[count.index].id
 
   tags = {
-    Name    = "${var.vpc_name}-${random_id.this.hex}"
+    Name      = var.name
+    Workspace = terraform.workspace
   }
 
   lifecycle {
@@ -168,7 +175,8 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.this[0].id
 
   tags = {
-    Name       = "${var.vpc_name}-${random_id.this.hex}"
+    Name       = var.name
+    Workspace  = terraform.workspace
     SubnetType = "public"
   }
 
@@ -183,8 +191,9 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this[0].id
 
   tags = {
-    Name    = "${var.vpc_name}-${random_id.this.hex}"
-    Network = "NAT"
+    Name       = var.name
+    Workspace  = terraform.workspace
+    SubnetType = "public"
   }
 
   lifecycle {
@@ -193,11 +202,11 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route" "public" {
-  count = var.create_vpc ? local.nat_gateways_count : 0
+  count = var.create_vpc ? 1 : 0
 
   route_table_id         = aws_route_table.public[0].id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = local.nat_gateways_count == 1 ? aws_nat_gateway.nat[0].id : aws_nat_gateway.nat[count.index].id
+  gateway_id             = aws_internet_gateway.this[0].id
 
   lifecycle {
     create_before_destroy = true
@@ -224,7 +233,9 @@ resource "aws_subnet" "private" {
   vpc_id                  = aws_vpc.this[0].id
 
   tags = {
-    Name       = "${var.vpc_name}-${random_id.this.hex}"
+    Name       = var.name
+    Workspace  = terraform.workspace
+    Network    = "NAT"
     SubnetType = "private"
   }
 
@@ -239,7 +250,8 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this[0].id
 
   tags = {
-    Name       = "${var.vpc_name}-${random_id.this.hex}"
+    Name       = var.name
+    Workspace  = terraform.workspace
     SubnetType = "private"
   }
 

@@ -2,10 +2,10 @@ terraform {
   experiments = [variable_validation]
 }
 
-variable "vpc_name" {
+variable "name" {
   type        = string
-  description = "The name that will be used in VPC resources tags."
-  default     = "terraform-aws-vpc"
+  description = "Name that will be used in resources names and tags."
+  default     = "terraform-aws-vpc-public-private"
 }
 
 variable "create_vpc" {
