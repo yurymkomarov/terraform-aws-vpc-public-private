@@ -153,7 +153,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "nat" {
-  count = var.create_vpc ? local.nat_gateways_count : 0
+  count = var.create_vpc && var.create_nat_gateway ? local.nat_gateways_count : 0
 
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = local.nat_gateways_count == 1 ? aws_subnet.public[0].id : aws_subnet.public[count.index].id
@@ -272,7 +272,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route" "private" {
-  count = var.create_vpc ? local.nat_gateways_count : 0
+  count = var.create_vpc && var.create_nat_gateway ? local.nat_gateways_count : 0
 
   route_table_id         = aws_route_table.private[0].id
   destination_cidr_block = "0.0.0.0/0"

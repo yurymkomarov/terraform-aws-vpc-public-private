@@ -20,6 +20,12 @@ variable "all_availability_zones" {
   default     = true
 }
 
+variable "create_nat_gateway" {
+  type        = bool
+  description = "Create NAT Gateway."
+  default     = true
+}
+
 variable "nat_gateway_for_each_subnet" {
   type        = bool
   description = "Create NAT Gateway for each subnet. Will create 1 NAT Gateway if \"false\"."
