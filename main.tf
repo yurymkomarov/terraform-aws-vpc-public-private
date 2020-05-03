@@ -17,11 +17,7 @@ resource "random_id" "this" {
   byte_length = 1
 
   keepers = {
-    all_availability_zones = var.all_availability_zones
-    cidr_block             = var.cidr_block
-    create_vpc             = var.create_vpc
-    flow_log_enable        = var.flow_log_enable
-    flow_log_destination   = var.flow_log_destination
+    cidr_block = var.cidr_block
   }
 }
 

@@ -38,8 +38,9 @@ variable "cidr_block" {
 }
 
 variable "flow_log_enable" {
-  type    = bool
-  default = true
+  type        = bool
+  description = "Enable Flow log for VPC."
+  default     = true
 }
 
 variable "flow_log_destination" {
