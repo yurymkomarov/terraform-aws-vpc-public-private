@@ -34,6 +34,7 @@ resource "aws_vpc" "this" {
 
   tags = {
     Name      = var.name
+    Module    = path.module
     Workspace = terraform.workspace
   }
 
@@ -64,6 +65,7 @@ resource "aws_cloudwatch_log_group" "this" {
 
   tags = {
     Name      = var.name
+    Module    = path.module
     Workspace = terraform.workspace
   }
 
@@ -79,6 +81,7 @@ resource "aws_s3_bucket" "this" {
 
   tags = {
     Name      = var.name
+    Module    = path.module
     Workspace = terraform.workspace
   }
 
@@ -98,6 +101,7 @@ resource "aws_iam_role" "this" {
 
   tags = {
     Name      = var.name
+    Module    = path.module
     Workspace = terraform.workspace
   }
 
@@ -126,6 +130,7 @@ resource "aws_internet_gateway" "this" {
 
   tags = {
     Name      = var.name
+    Module    = path.module
     Workspace = terraform.workspace
   }
 
@@ -141,6 +146,7 @@ resource "aws_eip" "nat" {
 
   tags = {
     Name      = var.name
+    Module    = path.module
     Workspace = terraform.workspace
     Network   = "NAT"
   }
@@ -158,6 +164,7 @@ resource "aws_nat_gateway" "nat" {
 
   tags = {
     Name      = var.name
+    Module    = path.module
     Workspace = terraform.workspace
   }
 
@@ -175,7 +182,9 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.this[0].id
 
   tags = {
-    Name       = var.name
+    Name = var.name
+
+    Module     = path.module
     Workspace  = terraform.workspace
     SubnetType = "public"
   }
@@ -191,7 +200,9 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this[0].id
 
   tags = {
-    Name       = var.name
+    Name = var.name
+
+    Module     = path.module
     Workspace  = terraform.workspace
     SubnetType = "public"
   }
@@ -233,7 +244,9 @@ resource "aws_subnet" "private" {
   vpc_id                  = aws_vpc.this[0].id
 
   tags = {
-    Name       = var.name
+    Name = var.name
+
+    Module     = path.module
     Workspace  = terraform.workspace
     Network    = "NAT"
     SubnetType = "private"
@@ -250,7 +263,9 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this[0].id
 
   tags = {
-    Name       = var.name
+    Name = var.name
+
+    Module     = path.module
     Workspace  = terraform.workspace
     SubnetType = "private"
   }
